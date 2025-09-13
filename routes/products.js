@@ -1,35 +1,62 @@
 const express = require('express');
 const router = express.Router();
-const CartManager = require('../managers/CartManager');
+const ProductManager = require('../managers/ProductManager');
 
-const cartManager = new CartManager();
+const productManager = new ProductManager();
+
+router.get('/', async (req, res) => {
+  try {
+    const products = await productManager.getProducts();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los matafuegos' });
+  }
+});
+
+router.get('/:pid', async (req, res) => {
+  try {
+    const product = await productManager.getProductById(Number(req.params.pid));
+    if (!product) return res.status(404).json({ error: 'Matafuego no encontrado' });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el matafuego' });
+  }
+});
 
 router.post('/', async (req, res) => {
+  const { title, description, code, price, stock, category, type, capacity, certifications, thumbnails } = req.body;
+  if (!title || !description || !code || !price || !stock || !category || !type || !capacity) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios: title, description, code, price, stock, category, type, capacity' });
+  }
   try {
-    const newCart = await cartManager.createCart();
-    res.status(201).json(newCart);
+    const newProduct = await productManager.addProduct({
+      title, description, code, price, stock, category, type, capacity,
+      certifications: certifications || [], thumbnails: thumbnails || []
+    });
+    res.status(201).json(newProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear el carrito' });
+    res.status(400).json({ error: error.message });
   }
 });
 
-router.get('/:cid', async (req, res) => {
+router.put('/:pid', async (req, res) => {
+  const { id, ...updatedFields } = req.body;
   try {
-    const cart = await cartManager.getCartById(Number(req.params.cid));
-    if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' });
-    res.json(cart);
+    const updatedProduct = await productManager.updateProduct(Number(req.params.pid), updatedFields);
+    if (!updatedProduct) return res.status(404).json({ error: 'Matafuego no encontrado' });
+    res.json(updatedProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener el carrito' });
+    res.status(400).json({ error: error.message });
   }
 });
 
-router.post('/:cid/product/:pid', async (req, res) => {
+router.delete('/:pid', async (req, res) => {
   try {
-    const updatedCart = await cartManager.addProductToCart(Number(req.params.cid), Number(req.params.pid));
-    if (!updatedCart) return res.status(404).json({ error: 'Carrito no encontrado' });
-    res.json(updatedCart);
+    const deleted = await productManager.deleteProduct(Number(req.params.pid));
+    if (!deleted) return res.status(404).json({ error: 'Matafuego no encontrado' });
+    res.json({ message: 'Matafuego eliminado' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al agregar el matafuego al carrito' });
+    res.status(500).json({ error: 'Error al eliminar el matafuego' });
   }
 });
 
