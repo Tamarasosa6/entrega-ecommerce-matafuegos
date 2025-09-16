@@ -44,7 +44,7 @@ class ProductManager {
       description: product.description,
       code: product.code,
       price: product.price,
-      status: true, // Default Boolean true
+      status: true, 
       stock: product.stock,
       category: product.category,
       type: product.type,
