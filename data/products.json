@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Matafuego ABC 5kg",
+    "description": "Extintor de polvo químico ABC para fuegos clase A, B y C. Ideal para uso general en hogares, vehículos y oficinas.",
+    "code": "ABC5KG001",
+    "price": 35000,
+    "status": true,
+    "stock": 25,
+    "category": "Seguridad General",
+    "type": "ABC",
+    "capacity": "5kg",
+    "certifications": ["IRAM"]
+  },
+  {
+    "id": 2,
+    "title": "Matafuego CO2 3.5kg",
+    "description": "Extintor de dióxido de carbono para fuegos clase B y E (eléctricos). No deja residuos y es ideal para entornos sensibles.",
+    "code": "CO235KG001",
+    "price": 45000,
+    "status": true,
+    "stock": 15,
+    "category": "Seguridad Industrial",
+    "type": "CO2",
+    "capacity": "3.5kg",
+    "certifications": ["IRAM"]
+  },
+  {
+    "id": 3,
+    "title": "Matafuego Acetato de Potasio K 6L",
+    "description": "Extintor de acetato de potasio para fuegos clase K (aceites y grasas de cocina). Efectivo en cocinas comerciales y domésticas.",
+    "code": "K6L001",
+    "price": 55000,
+    "status": true,
+    "stock": 10,
+    "category": "Seguridad en Cocinas",
+    "type": "K",
+    "capacity": "6L",
+    "certifications": ["IRAM"]
+  }
+]
+
