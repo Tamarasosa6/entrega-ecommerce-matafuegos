@@ -15,7 +15,7 @@
   {
     "id": 2,
     "title": "Matafuego CO2 3.5kg",
-    "description": "Extintor de dióxido de carbono para fuegos clase B y E (eléctricos). No deja residuos y es ideal para entornos sensibles.",
+    "description": "Extintor de dióxido de carbono para fuegos clase Bgit ",
     "code": "CO235KG001",
     "price": 45000,
     "status": true,
@@ -28,7 +28,7 @@
   {
     "id": 3,
     "title": "Matafuego Acetato de Potasio K 6L",
-    "description": "Extintor de acetato de potasio para fuegos clase K (aceites y grasas de cocina). Efectivo en cocinas comerciales y domésticas.",
+    "description": "Extintor de acetato de potasio para fuegos clase K",
     "code": "K6L001",
     "price": 55000,
     "status": true,
