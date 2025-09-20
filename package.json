@@ -1,7 +1,7 @@
 {
   "name": "entrega-ecommerce-matafuegos",
   "version": "1.0.0",
-  "description": "",
+  "description": "echo \"# Entrega 1: API de Matafuegos\r API RESTful para gestionar matafuegos y carritos, desarrollada con Node.js, Express y persistencia en JSON.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,5 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tamarasosa6/entrega-ecommerce-matafuegos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tamarasosa6/entrega-ecommerce-matafuegos/issues"
+  },
+  "homepage": "https://github.com/Tamarasosa6/entrega-ecommerce-matafuegos#readme"
 }
