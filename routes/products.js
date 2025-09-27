@@ -1,36 +1,57 @@
 const express = require('express');
 const router = express.Router();
-const CartManager = require('../managers/CartManager');
+const ProductManager = require('../managers/ProductManager');
 
-const cartManager = new CartManager();
+const productManager = new ProductManager();
 
 router.post('/', async (req, res) => {
   try {
-    const newCart = await cartManager.createCart();
-    res.status(201).json(newCart);
+    const newProduct = req.body;
+    const createdProduct = await productManager.createProduct(newProduct);
+    res.status(201).json(createdProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear el carrito' });
+    res.status(500).json({ error: 'Error al crear el producto' });
   }
 });
 
-router.get('/:cid', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const cart = await cartManager.getCartById(Number(req.params.cid));
-    if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' });
-    res.json(cart);
+    const products = await productManager.getAllProducts();
+    res.json(products);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener el carrito' });
+    res.status(500).json({ error: 'Error al obtener los productos' });
   }
 });
 
-router.post('/:cid/product/:pid', async (req, res) => {
+router.get('/:pid', async (req, res) => {
   try {
-    const updatedCart = await cartManager.addProductToCart(Number(req.params.cid), Number(req.params.pid));
-    if (!updatedCart) return res.status(404).json({ error: 'Carrito no encontrado' });
-    res.json(updatedCart);
+    const product = await productManager.getProductById(Number(req.params.pid));
+    if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(product);
   } catch (error) {
-    res.status(500).json({ error: 'Error al agregar el matafuego al carrito' });
+    res.status(500).json({ error: 'Error al obtener el producto' });
+  }
+});
+
+router.put('/:pid', async (req, res) => {
+  try {
+    const updatedProduct = await productManager.updateProduct(Number(req.params.pid), req.body);
+    if (!updatedProduct) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el producto' });
+  }
+});
+
+router.delete('/:pid', async (req, res) => {
+  try {
+    const deleted = await productManager.deleteProduct(Number(req.params.pid));
+    if (!deleted) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar el producto' });
   }
 });
 
 module.exports = router;
+
