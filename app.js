@@ -3,7 +3,7 @@ const exphbs = require('express-handlebars');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-const ProductManager = require('./managers/ProductManager'); // Corregido: desde managers/
+const ProductManager = require('./managers/ProductManager');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas
-const productsRouter = require('./routes/products')(io); // Pasar io al router
+const productsRouter = require('./routes/products')(io);
 const cartsRouter = require('./routes/carts');
 const viewsRouter = require('./routes/views.router');
 app.use('/api/products', productsRouter);
@@ -29,11 +29,9 @@ app.use('/api/carts', cartsRouter);
 app.use('/', viewsRouter);
 
 // Configurar WebSockets
-const productManager = new ProductManager('./data/products.json'); // Corregido: ruta a products.json
+const productManager = new ProductManager('./data/products.json');
 io.on('connection', (socket) => {
   console.log('Cliente conectado');
-
-  // Manejar adición de producto
   socket.on('addProduct', async (product) => {
     try {
       await productManager.addProduct(product);
@@ -43,8 +41,6 @@ io.on('connection', (socket) => {
       console.error('Error al agregar producto:', error);
     }
   });
-
-  // Manejar eliminación de producto
   socket.on('deleteProduct', async (pid) => {
     try {
       await productManager.deleteProduct(pid);

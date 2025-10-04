@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const ProductManager = require('../managers/ProductManager'); // Corregido: desde managers/
-
-const productManager = new ProductManager('../data/products.json'); // Ajustado: ruta desde routes/
+const ProductManager = require('../managers/ProductManager');
+const productManager = new ProductManager('../data/products.json');
 
 router.get('/', async (req, res) => {
   try {
