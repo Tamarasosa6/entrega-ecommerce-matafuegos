@@ -1,0 +1,63 @@
+<h1>Productos en Tiempo Real (Matafuegos)</h1>
+<ul id="productsList">
+  {{#each products}}
+    <li data-id="{{this.id}}">{{this.title}} - Precio: ${{this.price}} - Stock: {{this.stock}} - Categoría: {{this.category}}</li>
+  {{/each}}
+</ul>
+
+<h2>Agregar Nuevo Matafuego</h2>
+<form id="addProductForm">
+  <input type="text" name="title" placeholder="Título (ej. Matafuego ABC)" required>
+  <input type="text" name="description" placeholder="Descripción" required>
+  <input type="text" name="code" placeholder="Código (ej. MTF-001)" required>
+  <input type="number" name="price" placeholder="Precio" required>
+  <input type="number" name="stock" placeholder="Stock" required>
+  <input type="text" name="category" placeholder="Categoría (ej. Seguridad)" required>
+  <button type="submit">Agregar Matafuego</button>
+</form>
+
+<h2>Eliminar Matafuego</h2>
+<form id="deleteProductForm">
+  <input type="text" name="pid" placeholder="ID del Matafuego" required>
+  <button type="submit">Eliminar</button>
+</form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  socket.on('updateProducts', (products) => {
+    const list = document.getElementById('productsList');
+    list.innerHTML = '';
+    products.forEach(product => {
+      const li = document.createElement('li');
+      li.dataset.id = product.id;
+      li.textContent = `${product.title} - Precio: $${product.price} - Stock: ${product.stock} - Categoría: ${product.category}`;
+      list.appendChild(li);
+    });
+  });
+
+  document.getElementById('addProductForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const product = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      code: formData.get('code'),
+      price: parseFloat(formData.get('price')),
+      stock: parseInt(formData.get('stock')),
+      category: formData.get('category'),
+      status: true,
+      thumbnails: []
+    };
+    socket.emit('addProduct', product);
+    e.target.reset();
+  });
+
+  document.getElementById('deleteProductForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pid = e.target.elements.pid.value;
+    socket.emit('deleteProduct', pid);
+    e.target.reset();
+  });
+</script>
