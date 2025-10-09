@@ -4,13 +4,13 @@ API RESTful para gestionar matafuegos y carritos, desarrollada con Node.js, Expr
 ## Instalación
 1. Clona el repositorio: \`git clone https://github.com/Tamarasosa6/entrega-ecommerce.git\`
 2. Instala dependencias: \`npm install\`
-3. Inicia el servidor: \`node src/app.js\`
+3. Inicia el servidor: \`node app.js\`
 
 ## Estructura
-- \`src/app.js\`: Servidor principal.
-- \`src/data/\`: Archivos JSON para persistencia (\`products.json\`, \`carts.json\`).
-- \`src/managers/\`: Lógica de gestión (\`ProductManager.js\`, \`CartManager.js\`).
-- \`src/routes/\`: Rutas de la API (\`products.js\`, \`carts.js\`).
+- \`app.js\`: Servidor principal.
+- \`data/\`: Archivos JSON para persistencia (\`products.json\`, \`carts.json\`).
+- \`managers/\`: Lógica de gestión (\`ProductManager.js\`, \`CartManager.js\`).
+- \`routes/\`: Rutas de la API (\`products.js\`, \`carts.js\`).
 
 ## Endpoints
 ### Productos
