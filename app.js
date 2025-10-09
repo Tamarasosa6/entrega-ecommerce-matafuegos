@@ -1,58 +1,66 @@
+// app.js
 const express = require('express');
-const exphbs = require('express-handlebars');
-const http = require('http');
-const socketIo = require('socket.io');
+const handlebars = require('express-handlebars');
+const { Server } = require('socket.io');
 const path = require('path');
+const productRouter = require('./routes/products');
+const cartRouter = require('./routes/carts');
 const ProductManager = require('./managers/ProductManager');
 
 const app = express();
-const server = http.createServer(app);
-const io = new socketIo.Server(server);
-const PORT = 8080;
+const port = 8080;
 
-// Configurar Handlebars
-app.engine('handlebars', exphbs.engine());
+// Configuración de Handlebars
+app.engine('handlebars', handlebars.engine({
+    layoutsDir: path.join(__dirname, 'views/layouts'),
+    defaultLayout: 'main'
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middlewares
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rutas
-const productsRouter = require('./routes/products')(io);
-const cartsRouter = require('./routes/carts');
-const viewsRouter = require('./routes/views.router');
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-app.use('/', viewsRouter);
+// Rutas API
+app.use('/api/products', productRouter);
+app.use('/api/carts', cartRouter);
 
-// Configurar WebSockets
-const productManager = new ProductManager('./data/products.json');
-io.on('connection', (socket) => {
-  console.log('Cliente conectado');
-  socket.on('addProduct', async (product) => {
-    try {
-      await productManager.addProduct(product);
-      const products = await productManager.getProducts();
-      io.emit('updateProducts', products);
-    } catch (error) {
-      console.error('Error al agregar producto:', error);
-    }
-  });
-  socket.on('deleteProduct', async (pid) => {
-    try {
-      await productManager.deleteProduct(pid);
-      const products = await productManager.getProducts();
-      io.emit('updateProducts', products);
-    } catch (error) {
-      console.error('Error al eliminar producto:', error);
-    }
-  });
+// Rutas de vistas
+app.get('/', (req, res) => {
+    const productManager = new ProductManager('./data/products.json');
+    const products = productManager.getProducts();
+    res.render('home', { products });
 });
 
-// Iniciar servidor
-server.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
+app.get('/realtimeproducts', (req, res) => {
+    const productManager = new ProductManager('./data/products.json');
+    const products = productManager.getProducts();
+    res.render('realTimeProducts', { products });
+});
+
+// Configuración del servidor WebSocket
+const httpServer = app.listen(port, () => {
+    console.log(`Servidor escuchando en http://localhost:${port}`);
+});
+const io = new Server(httpServer);
+
+// Manejo de conexiones WebSocket
+io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
+
+    socket.on('addProduct', (product) => {
+        const productManager = new ProductManager('./data/products.json');
+        productManager.addProduct(product);
+        const updatedProducts = productManager.getProducts();
+        io.emit('updateProducts', updatedProducts);
+    });
+
+    socket.on('deleteProduct', (id) => {
+        const productManager = new ProductManager('./data/products.json');
+        productManager.deleteProduct(id);
+        const updatedProducts = productManager.getProducts();
+        io.emit('updateProducts', updatedProducts);
+    });
 });

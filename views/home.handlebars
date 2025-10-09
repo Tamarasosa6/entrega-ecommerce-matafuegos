@@ -1,7 +1,6 @@
-<h1>Lista de Productos (Matafuegos)</h1>
+<h1>Lista de Matafuegos</h1>
 <ul>
-  {{#each products}}
-    <li>{{this.title}} - Precio: ${{this.price}} - Stock: {{this.stock}} - Categoría: {{this.category}}</li>
-  {{/each}}
+    {{#each products}}
+        <li>{{this.title}} - ${{this.price}} (Stock: {{this.stock}})</li>
+    {{/each}}
 </ul>
-<a href="/realtimeproducts">Ver productos en tiempo real</a>
