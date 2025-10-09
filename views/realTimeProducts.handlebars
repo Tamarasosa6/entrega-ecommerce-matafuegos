@@ -1,3 +1,4 @@
+<!-- views/realTimeProducts.handlebars -->
 <h1>Productos en Tiempo Real</h1>
 
 <!-- Formulario para agregar un producto -->
@@ -8,6 +9,17 @@
     <input type="number" name="price" placeholder="Precio" required>
     <input type="number" name="stock" placeholder="Stock" required>
     <input type="text" name="category" placeholder="Categoría" required>
+    <select name="type" required>
+        <option value="" disabled selected>Selecciona el tipo de matafuego</option>
+        <option value="ABC">ABC</option>
+        <option value="BC">BC</option>
+        <option value="CO2">CO2</option>
+        <option value="AFFF">AFFF</option>
+        <option value="K">K</option>
+        <option value="D">D</option>
+    </select>
+    <input type="text" name="thumbnails" placeholder="URL de la imagen (opcional)">
+    <input type="text" name="certifications" placeholder="Certificaciones (opcional, ej. IRAM)">
     <button type="submit">Agregar Producto</button>
 </form>
 
@@ -21,7 +33,7 @@
 <h2>Lista de Matafuegos</h2>
 <ul id="productsList">
     {{#each products}}
-        <li>{{this.title}} - ${{this.price}} (Stock: {{this.stock}})</li>
+        <li>{{this.title}} - ${{this.price}} (Stock: {{this.stock}}, Tipo: {{this.type}})</li>
     {{/each}}
 </ul>
 
@@ -40,7 +52,10 @@
             code: formData.get('code'),
             price: parseFloat(formData.get('price')),
             stock: parseInt(formData.get('stock')),
-            category: formData.get('category')
+            category: formData.get('category'),
+            type: formData.get('type'),
+            thumbnails: formData.get('thumbnails') ? [formData.get('thumbnails')] : [],
+            certifications: formData.get('certifications') ? [formData.get('certifications')] : []
         };
         socket.emit('addProduct', product);
         e.target.reset();
@@ -60,8 +75,9 @@
         productsList.innerHTML = '';
         products.forEach(product => {
             const li = document.createElement('li');
-            li.textContent = `${product.title} - $${product.price} (Stock: ${product.stock})`;
+            li.textContent = `${product.title} - $${product.price} (Stock: ${product.stock}, Tipo: ${product.type})`;
             productsList.appendChild(li);
         });
     });
 </script>
+

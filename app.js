@@ -51,16 +51,24 @@ io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
 
     socket.on('addProduct', (product) => {
-        const productManager = new ProductManager('./data/products.json');
-        productManager.addProduct(product);
-        const updatedProducts = productManager.getProducts();
-        io.emit('updateProducts', updatedProducts);
+        try {
+            const productManager = new ProductManager('./data/products.json');
+            productManager.addProduct(product);
+            const updatedProducts = productManager.getProducts();
+            io.emit('updateProducts', updatedProducts);
+        } catch (error) {
+            socket.emit('error', { message: error.message });
+        }
     });
 
     socket.on('deleteProduct', (id) => {
-        const productManager = new ProductManager('./data/products.json');
-        productManager.deleteProduct(id);
-        const updatedProducts = productManager.getProducts();
-        io.emit('updateProducts', updatedProducts);
+        try {
+            const productManager = new ProductManager('./data/products.json');
+            productManager.deleteProduct(id);
+            const updatedProducts = productManager.getProducts();
+            io.emit('updateProducts', updatedProducts);
+        } catch (error) {
+            socket.emit('error', { message: error.message });
+        }
     });
 });

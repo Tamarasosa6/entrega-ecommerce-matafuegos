@@ -10,7 +10,9 @@
     "category": "Seguridad General",
     "type": "ABC",
     "capacity": "5kg",
-    "certifications": ["IRAM"]
+    "certifications": [
+      "IRAM"
+    ]
   },
   {
     "id": 2,
@@ -23,7 +25,9 @@
     "category": "Seguridad Industrial",
     "type": "CO2",
     "capacity": "3.5kg",
-    "certifications": ["IRAM"]
+    "certifications": [
+      "IRAM"
+    ]
   },
   {
     "id": 3,
@@ -36,7 +40,21 @@
     "category": "Seguridad en Cocinas",
     "type": "K",
     "capacity": "6L",
-    "certifications": ["IRAM"]
+    "certifications": [
+      "IRAM"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "matafuego 5 kg co2",
+    "description": "Matafuego 5 kg. CO2",
+    "code": "12211",
+    "price": 100000,
+    "status": true,
+    "stock": 10,
+    "category": "BC",
+    "type": "CO2",
+    "thumbnails": [],
+    "certifications": []
   }
 ]
-

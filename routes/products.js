@@ -1,71 +1,58 @@
+// routes/products.js
 const express = require('express');
-const router = express.Router();
 const ProductManager = require('../managers/ProductManager');
+const fs = require('fs');
 
-const productManager = new ProductManager('../data/products.json');
+const router = express.Router();
+const productManager = new ProductManager('./data/products.json');
 
-module.exports = (io) => {
-  // GET /api/products/
-  router.get('/', async (req, res) => {
-    try {
-      const products = await productManager.getProducts();
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ error: 'Error al obtener productos' });
+router.get('/', (req, res) => {
+    const products = productManager.getProducts();
+    res.json(products);
+});
+
+router.get('/:pid', (req, res) => {
+    const product = productManager.getProducts().find(p => p.id === parseInt(req.params.pid));
+    if (product) {
+        res.json(product);
+    } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
     }
-  });
+});
 
-  // GET /api/products/:pid
-  router.get('/:pid', async (req, res) => {
+router.post('/', (req, res) => {
     try {
-      const product = await productManager.getProductById(req.params.pid);
-      if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
-      res.json(product);
+        const product = productManager.addProduct(req.body);
+        res.status(201).json(product);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener producto' });
+        res.status(400).json({ error: error.message });
     }
-  });
+});
 
-  // POST /api/products/
-  router.post('/', async (req, res) => {
-    try {
-      const product = req.body;
-      await productManager.addProduct(product);
-      const products = await productManager.getProducts();
-      io.emit('updateProducts', products); // Emitir actualización para WebSockets
-      res.status(201).json({ message: 'Producto agregado' });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+router.put('/:pid', (req, res) => {
+    const products = productManager.getProducts();
+    const productIndex = products.findIndex(p => p.id === parseInt(req.params.pid));
+    if (productIndex === -1) {
+        return res.status(404).json({ error: 'Producto no encontrado' });
     }
-  });
-
-  // PUT /api/products/:pid
-  router.put('/:pid', async (req, res) => {
-    try {
-      const updatedFields = req.body;
-      await productManager.updateProduct(req.params.pid, updatedFields);
-      const products = await productManager.getProducts();
-      io.emit('updateProducts', products); // Emitir actualización para WebSockets
-      res.json({ message: 'Producto actualizado' });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+    const updatedProduct = { ...products[productIndex], ...req.body, id: products[productIndex].id };
+    if (updatedProduct.type && !['ABC', 'BC', 'CO2', 'AFFF', 'K', 'D'].includes(updatedProduct.type)) {
+        return res.status(400).json({ error: 'Tipo de matafuego inválido. Tipos permitidos: ABC, BC, CO2, AFFF, K, D' });
     }
-  });
+    products[productIndex] = updatedProduct;
+    fs.writeFileSync(productManager.path, JSON.stringify(products, null, 2));
+    res.json(updatedProduct);
+});
 
-  // DELETE /api/products/:pid
-  router.delete('/:pid', async (req, res) => {
-    try {
-      await productManager.deleteProduct(req.params.pid);
-      const products = await productManager.getProducts();
-      io.emit('updateProducts', products); // Emitir actualización para WebSockets
-      res.json({ message: 'Producto eliminado' });
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+router.delete('/:pid', (req, res) => {
+    const products = productManager.getProducts();
+    const product = products.find(p => p.id === parseInt(req.params.pid));
+    if (!product) {
+        return res.status(404).json({ error: 'Producto no encontrado' });
     }
-  });
+    productManager.deleteProduct(req.params.pid);
+    res.json({ message: 'Producto eliminado' });
+});
 
-  return router;
-};
-
-
+module.exports = router;
 
