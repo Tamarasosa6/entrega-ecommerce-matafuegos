@@ -10,14 +10,12 @@
     "category": "Seguridad General",
     "type": "ABC",
     "capacity": "5kg",
-    "certifications": [
-      "IRAM"
-    ]
+    "certifications": ["IRAM"]
   },
   {
     "id": 2,
     "title": "Matafuego CO2 3.5kg",
-    "description": "Extintor de dióxido de carbono para fuegos clase Bgit ",
+    "description": "Extintor de dióxido de carbono para fuegos clase B y C.",
     "code": "CO235KG001",
     "price": 45000,
     "status": true,
@@ -25,14 +23,12 @@
     "category": "Seguridad Industrial",
     "type": "CO2",
     "capacity": "3.5kg",
-    "certifications": [
-      "IRAM"
-    ]
+    "certifications": ["IRAM"]
   },
   {
     "id": 3,
     "title": "Matafuego Acetato de Potasio K 6L",
-    "description": "Extintor de acetato de potasio para fuegos clase K",
+    "description": "Extintor de acetato de potasio para fuegos clase K.",
     "code": "K6L001",
     "price": 55000,
     "status": true,
@@ -40,21 +36,20 @@
     "category": "Seguridad en Cocinas",
     "type": "K",
     "capacity": "6L",
-    "certifications": [
-      "IRAM"
-    ]
+    "certifications": ["IRAM"]
   },
   {
     "id": 4,
     "title": "matafuego 5 kg co2",
-    "description": "Matafuego 5 kg. CO2",
+    "description": "Extintor de dióxido de carbono para fuegos clase B y C.",
     "code": "12211",
     "price": 100000,
     "status": true,
     "stock": 10,
     "category": "BC",
     "type": "CO2",
-    "thumbnails": [],
-    "certifications": []
+    "capacity": "5kg",
+    "certifications": [],
+    "thumbnails": []
   }
 ]

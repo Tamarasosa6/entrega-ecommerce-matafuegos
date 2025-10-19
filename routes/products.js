@@ -1,58 +1,79 @@
-// routes/products.js
 const express = require('express');
-const ProductManager = require('../managers/ProductManager');
-const fs = require('fs');
-
 const router = express.Router();
-const productManager = new ProductManager('./data/products.json');
+const Product = require('../models/products');
 
-router.get('/', (req, res) => {
-    const products = productManager.getProducts();
-    res.json(products);
-});
-
-router.get('/:pid', (req, res) => {
-    const product = productManager.getProducts().find(p => p.id === parseInt(req.params.pid));
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
-    }
-});
-
-router.post('/', (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const product = productManager.addProduct(req.body);
-        res.status(201).json(product);
+        const { limit = 10, page = 1, sort, query } = req.query;
+        const filter = {};
+        if (query) {
+            if (query === 'true' || query === 'false') {
+                filter.status = query === 'true';
+            } else {
+                filter.category = query;
+            }
+        }
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: sort ? { price: sort === 'asc' ? 1 : -1 } : null
+        };
+        const result = await Product.paginate(filter, options);
+        res.json({
+            status: 'success',
+            payload: result.docs,
+            totalPages: result.totalPages,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null,
+            nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null
+        });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ status: 'error', message: error.message });
     }
 });
 
-router.put('/:pid', (req, res) => {
-    const products = productManager.getProducts();
-    const productIndex = products.findIndex(p => p.id === parseInt(req.params.pid));
-    if (productIndex === -1) {
-        return res.status(404).json({ error: 'Producto no encontrado' });
+router.get('/:pid', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.pid);
+        if (!product) return res.status(404).json({ status: 'error', message: 'Producto no encontrado' });
+        res.json({ status: 'success', payload: product });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
     }
-    const updatedProduct = { ...products[productIndex], ...req.body, id: products[productIndex].id };
-    if (updatedProduct.type && !['ABC', 'BC', 'CO2', 'AFFF', 'K', 'D'].includes(updatedProduct.type)) {
-        return res.status(400).json({ error: 'Tipo de matafuego inválido. Tipos permitidos: ABC, BC, CO2, AFFF, K, D' });
-    }
-    products[productIndex] = updatedProduct;
-    fs.writeFileSync(productManager.path, JSON.stringify(products, null, 2));
-    res.json(updatedProduct);
 });
 
-router.delete('/:pid', (req, res) => {
-    const products = productManager.getProducts();
-    const product = products.find(p => p.id === parseInt(req.params.pid));
-    if (!product) {
-        return res.status(404).json({ error: 'Producto no encontrado' });
+router.post('/', async (req, res) => {
+    try {
+        const product = new Product(req.body);
+        await product.save();
+        res.status(201).json({ status: 'success', payload: product });
+    } catch (error) {
+        res.status(400).json({ status: 'error', message: error.message });
     }
-    productManager.deleteProduct(req.params.pid);
-    res.json({ message: 'Producto eliminado' });
+});
+
+router.put('/:pid', async (req, res) => {
+    try {
+        const product = await Product.findByIdAndUpdate(req.params.pid, req.body, { new: true });
+        if (!product) return res.status(404).json({ status: 'error', message: 'Producto no encontrado' });
+        res.json({ status: 'success', payload: product });
+    } catch (error) {
+        res.status(400).json({ status: 'error', message: error.message });
+    }
+});
+
+router.delete('/:pid', async (req, res) => {
+    try {
+        const product = await Product.findByIdAndDelete(req.params.pid);
+        if (!product) return res.status(404).json({ status: 'error', message: 'Producto no encontrado' });
+        res.json({ status: 'success', message: 'Producto eliminado' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
 });
 
 module.exports = router;
-
