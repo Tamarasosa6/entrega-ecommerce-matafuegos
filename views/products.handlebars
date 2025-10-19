@@ -1,24 +1,36 @@
 <h1>Productos</h1>
-<ul>
-    {{#each products}}
-    <li>
-        <a href="/products/{{this._id}}">{{this.title}}</a> - ${{this.price}} 
-        <button onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
-    </li>
-    {{/each}}
-</ul>
 <div>
-    {{#if pagination.hasPrevPage}}
-    <a href="{{pagination.prevLink}}">Página anterior</a>
+    {{#each products}}
+    <div>
+        <h2>{{this.title}}</h2>
+        <p>{{this.description}}</p>
+        <p>Precio: ${{this.price}}</p>
+        <p>Categoría: {{this.category}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <a href="/products/{{this._id}}">Ver detalles</a>
+        <button onclick="addToCart('{{this._id}}', '{{../cartId}}')">Agregar al carrito</button>
+    </div>
+    {{/each}}
+</div>
+<div>
+    {{#if hasPrevPage}}
+    <a href="{{prevLink}}">Página anterior</a>
     {{/if}}
-    <span>Página {{pagination.page}} de {{pagination.totalPages}}</span>
-    {{#if pagination.hasNextPage}}
-    <a href="{{pagination.nextLink}}">Página siguiente</a>
+    <span>Página {{page}} de {{totalPages}}</span>
+    {{#if hasNextPage}}
+    <a href="{{nextLink}}">Página siguiente</a>
     {{/if}}
 </div>
+<a href="/carts/{{cartId}}">Ver carrito</a>
 <script>
-    async function addToCart(productId) {
-        const response = await fetch(`/api/carts/123/product/${productId}`, { method: 'POST' }); // Reemplaza 123 con el ID del carrito
-        alert('Producto agregado al carrito');
+    function addToCart(productId, cartId) {
+        fetch(`/api/carts/${cartId}/products/${productId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: 1 })
+        })
+        .then(res => res.json())
+        .then(data => alert('Producto agregado al carrito'))
+        .catch(err => alert('Error: ' + err.message));
     }
 </script>
