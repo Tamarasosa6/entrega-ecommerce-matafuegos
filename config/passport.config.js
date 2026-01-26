@@ -1,57 +1,34 @@
-// passport.config.js
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
+import jwt from "passport-jwt";
 import UserModel from "../models/user.model.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const initializePassport = () => 
-  /* ================== LOCAL STRATEGY ================== */
-  passport.use(
-    "login",
-    new LocalStrategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-      },
-      async (email, password, done) => {
-        try {
-          const user = await UserModel.findOne({ email });
-          if (!user) {
-            return done(null, false, { message: "Usuario no encontrado" });
-          }
+const JwtStrategy = jwt.Strategy;
+const ExtractJwt = jwt.ExtractJwt;
 
-          const isValid = user.isValidPassword(password);
-          if (!isValid) {
-            return done(null, false, { message: "Contraseña incorrecta" });
-          }
+const JWT_SECRET = process.env.JWT_SECRET || "coderSecret";
 
-          return done(null, user);
-        } catch (err) {
-          return done(err);
-        }
-      }
-    )
-  );
-
-  /* ================== JWT STRATEGY ================== */
+export default function initializePassport() {
   passport.use(
     "jwt",
-    new JWTStrategy(
+    new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: process.env.JWT_SECRET,
+        secretOrKey: JWT_SECRET,
       },
       async (jwt_payload, done) => {
         try {
-          const user = await UserModel.findById(jwt_payload.id);
-          if (user) return done(null, user);
-          else return done(null, false);
-        } catch (err) {
-          return done(err, false);
+          const user = await UserModel.findById(jwt_payload.id).lean();
+          if (!user) {
+            return done(null, false);
+          }
+          return done(null, user);
+        } catch (error) {
+          return done(error, false);
         }
       }
     )
   );
+}
